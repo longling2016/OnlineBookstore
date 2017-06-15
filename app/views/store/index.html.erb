@@ -1,0 +1,36 @@
+<% if notice %>
+<p id="notice"><%= notice %></p>
+<% end %>
+<h1>Your Nail Catalog</h1>
+
+<% cache ['store', Product.last] do %>
+<div>
+<%= form_tag(store_url, :method => "get", id: "search-form") do %>
+<%= text_field_tag :search, params[:search], placeholder: "Search Books" %>
+<%= submit_tag "Search" %>
+<% end %>
+</div>
+
+<% if @products.present? %>
+  <% @products.each do |product| %>
+<% cache ['entry', product] do %>
+<div class="entry">
+<%= image_tag(product.image_url) %>
+<h3><%= product.title %></h3>
+<p><%= sanitize(product.description) %></p>
+<div class="price_line">
+<span class="price"><%= number_to_currency(product.price) %></span>
+<%= button_to 'Add to Cart', line_items_path(product_id: product), remote: true %>
+</div>
+</div>
+<% end %>
+<% end %>
+
+<% else %>
+  <p>There are no posts containing the term(s) <%= params[:search] %>.</p>
+
+
+<% end %>
+<% end %>
+
+<%= link_to 'Back', store_path %>
